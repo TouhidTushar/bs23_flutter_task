@@ -1,48 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'settings_controller.dart';
+import 'package:bs23_flutter_task/src/settings/bloc/theme_cubit.dart';
+import 'package:bs23_flutter_task/global/widgets/layouts/base_layout.dart';
 
-/// Displays the various settings that can be customized by the user.
-///
-/// When a user changes a setting, the SettingsController is updated and
-/// Widgets that listen to the SettingsController are rebuilt.
-class SettingsView extends StatelessWidget {
-  const SettingsView({super.key, required this.controller});
+@RoutePage()
+class SettingsView extends StatefulWidget {
+  const SettingsView({super.key});
 
-  static const routeName = '/settings';
+  @override
+  State<SettingsView> createState() => _SettingsViewState();
+}
 
-  final SettingsController controller;
+class _SettingsViewState extends State<SettingsView> {
+  late ThemeCubit _themeCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeCubit = context.read<ThemeCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        // Glue the SettingsController to the theme selection DropdownButton.
-        //
-        // When a user selects a theme from the dropdown list, the
-        // SettingsController is updated, which rebuilds the MaterialApp.
-        child: DropdownButton<ThemeMode>(
-          // Read the selected themeMode from the controller
-          value: controller.themeMode,
-          // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
-          items: const [
-            DropdownMenuItem(
-              value: ThemeMode.system,
-              child: Text('System Theme'),
+    return BaseLayout(
+      title: 'Settings',
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.palette, size: 30),
+                const SizedBox(width: 10),
+                Text(
+                  'Theme',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
             ),
-            DropdownMenuItem(
-              value: ThemeMode.light,
-              child: Text('Light Theme'),
+            const SizedBox(height: 10),
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                return RadioListTile<ThemeMode>(
+                  title: const Text('System'),
+                  value: ThemeMode.system,
+                  groupValue: state is SystemTheme ? ThemeMode.system : null,
+                  onChanged: (ThemeMode? value) {
+                    _themeCubit.setTheme(value!);
+                  },
+                );
+              },
             ),
-            DropdownMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Dark Theme'),
-            )
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                return RadioListTile<ThemeMode>(
+                  title: const Text('Light'),
+                  value: ThemeMode.light,
+                  groupValue: state is LightTheme ? ThemeMode.light : null,
+                  onChanged: (ThemeMode? value) {
+                    _themeCubit.setTheme(value!);
+                  },
+                );
+              },
+            ),
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                return RadioListTile<ThemeMode>(
+                  title: const Text('Dark'),
+                  value: ThemeMode.dark,
+                  groupValue: state is DarkTheme ? ThemeMode.dark : null,
+                  onChanged: (ThemeMode? value) {
+                    _themeCubit.setTheme(value!);
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),
