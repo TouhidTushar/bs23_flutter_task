@@ -1,0 +1,6 @@
+{
+  "appTitle": "bs23_flutter_task",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}
