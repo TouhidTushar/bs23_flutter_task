@@ -1,3 +1,5 @@
+import 'package:bs23_flutter_task/global/widgets/layouts/loading_layout.dart';
+import 'package:bs23_flutter_task/src/home/bloc/repo_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -7,6 +9,7 @@ import 'package:bs23_flutter_task/main.dart';
 import 'package:bs23_flutter_task/global/router/base_router.dart';
 import 'package:bs23_flutter_task/src/settings/bloc/theme_cubit.dart';
 import 'package:bs23_flutter_task/src/settings/bloc/language_cubit.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -25,6 +28,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider<ThemeCubit>.value(value: instance<ThemeCubit>()),
         BlocProvider<LanguageCubit>.value(value: instance<LanguageCubit>()),
+        BlocProvider<RepoCubit>.value(value: instance<RepoCubit>()),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -55,24 +59,28 @@ class _MyAppState extends State<MyApp> {
             },
           ),
         ],
-        child: MaterialApp.router(
-          restorationScopeId: 'app',
-          routerConfig: _router.config(),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''), // English, no country code
-          ],
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.appTitle,
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
-          themeMode: _themeMode,
-          locale: const Locale('en'),
+        child: GlobalLoaderOverlay(
+          useDefaultLoading: false,
+          overlayWidgetBuilder: (_) => LoadingLayout(),
+          child: MaterialApp.router(
+            restorationScopeId: 'app',
+            routerConfig: _router.config(),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English, no country code
+            ],
+            onGenerateTitle: (BuildContext context) =>
+                AppLocalizations.of(context)!.appTitle,
+            theme: ThemeData(),
+            darkTheme: ThemeData.dark(),
+            themeMode: _themeMode,
+            locale: const Locale('en'),
+          ),
         ),
       ),
     );

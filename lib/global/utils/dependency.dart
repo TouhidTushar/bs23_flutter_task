@@ -5,6 +5,7 @@ import 'package:bs23_flutter_task/global/router/base_router.dart';
 import 'package:bs23_flutter_task/global/utils/local_storage.dart';
 import 'package:bs23_flutter_task/src/settings/bloc/theme_cubit.dart';
 import 'package:bs23_flutter_task/src/settings/bloc/language_cubit.dart';
+import 'package:bs23_flutter_task/src/home/bloc/repo_cubit.dart';
 
 Future<void> injectDependencies(GetIt instance) async {
   final prefs = await SharedPreferences.getInstance();
@@ -22,5 +23,9 @@ Future<void> injectDependencies(GetIt instance) async {
 
   instance.registerSingleton<LanguageCubit>(
     LanguageCubit(),
+  );
+
+  instance.registerSingleton<RepoCubit>(
+    RepoCubit(),
   );
 }
